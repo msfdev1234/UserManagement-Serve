@@ -13,6 +13,5 @@ namespace UserManagement_Serv.Models
 
         public String Token { get; set; }
 
-
     }
 }

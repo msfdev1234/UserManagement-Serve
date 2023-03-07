@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using UserManagement_Serv.Context;
+using UserManagement_Serv.Dto;
 using UserManagement_Serv.Models;
 
 namespace UserManagement_Serv.Controllers
@@ -16,12 +18,14 @@ namespace UserManagement_Serv.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext appDbContext;
-        public UserController(AppDbContext aappDbContext)
+        private readonly IMapper _mapper;
+        public UserController(AppDbContext aappDbContext, IMapper mapper)
         {
             this.appDbContext = aappDbContext;
-
+            this._mapper = mapper;
         }
 
+        
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] User userObject)
         {
@@ -35,7 +39,7 @@ namespace UserManagement_Serv.Controllers
 
             userObject.Token = createJwtToken(userObject);
 
-            return Ok( new { Message = "Logged in Succesfull", Token = userObject.Token } );
+            return Ok( new { Message = "Logged in Succesfull", Token = userObject.Token, Name = user.Name } );
         }
 
         [HttpPost("register")]
@@ -62,11 +66,17 @@ namespace UserManagement_Serv.Controllers
 
         }
 
+
         [Authorize]
         [HttpGet("users")]
         public async Task<ActionResult<User>> getusers()
         {
-            return Ok(await appDbContext.Users.ToListAsync());
+            var usersDto = new UserDto();
+            var users = await appDbContext.Users.ToListAsync();
+
+            return Ok(users.Select(user => _mapper.Map<UserDto>(user)));
+
+            //return Ok(users);
         }
 
         private async Task<bool> IsUserExists(String email)
@@ -90,7 +100,7 @@ namespace UserManagement_Serv.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.Now.AddSeconds(10),
+                Expires = DateTime.Now.AddMinutes(5),
                 SigningCredentials = credentials
 
             };
