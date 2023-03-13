@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UserManagement_Serv.Context;
+using UserManagement_Serv.Interfaces;
+using UserManagement_Serv.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnStr"));
 });
 
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,6 +53,13 @@ builder.Services.AddAuthentication(x =>
 
 });
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,3 +77,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
