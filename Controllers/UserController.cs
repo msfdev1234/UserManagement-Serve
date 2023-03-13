@@ -77,42 +77,10 @@ namespace UserManagement_Serv.Controllers
         [HttpGet("users")]
         public async Task<ActionResult<User>> getusers()
         {
-
             var response = await _userService.GetAllUsers();
 
             return Ok(response);
 
         }
-
-        /* private async Task<bool> IsUserExists(String email)
-         {
-             return await appDbContext.Users.AnyAsync(x => x.Email == email);
-         }
-
-         private String createJwtToken(User user)
-         {
-             var jwtTokenHandler = new JwtSecurityTokenHandler();
-             var key = Encoding.ASCII.GetBytes("mazharsecretkeymohdmazharpatel@gmail.commohdmazharpatel3l@gmail.com");
-             var identity = new ClaimsIdentity(new Claim[]
-             {
-                 new Claim(ClaimTypes.Name, user.Name),
-                 new Claim(ClaimTypes.Email, user.Email)
-             });
-
-             var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
-
-
-             var tokenDescriptor = new SecurityTokenDescriptor
-             {
-                 Subject = identity,
-                 Expires = DateTime.Now.AddMinutes(5),
-                 SigningCredentials = credentials
-
-             };
-             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-             return jwtTokenHandler.WriteToken(token);
-          }
-
-     }*/
     }
 }
